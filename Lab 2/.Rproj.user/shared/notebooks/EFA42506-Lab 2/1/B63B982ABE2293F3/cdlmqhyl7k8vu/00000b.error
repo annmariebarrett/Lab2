@@ -1,1 +1,0 @@
-{"frames":[{"func":"data.frame(tv_staes)","file":"","line_number":0,"end_line_number":0,"character_number":0,"end_character_number":0}],"message":"Error in data.frame(tv_staes) : object 'tv_staes' not found\n"}

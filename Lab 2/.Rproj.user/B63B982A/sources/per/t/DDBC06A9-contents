@@ -1,0 +1,66 @@
+---
+title: "EDLD HW 1"
+author: "Kavya Mudiam"
+date: "1/22/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+
+library(dplyr)
+library(rio)
+library(ggplot2)
+```
+assessmemt: assessment_type
+student info has: gender, highest education, final result
+studentAssessment.csv: score
+
+```{r}
+here::here()
+
+assessments <- import("assessments.csv")
+courses <- import("courses.csv")
+studentAssessment <- import("studentAssessment.csv")
+studentInfo <- import("studentInfo.csv")
+studentReg <- import("studentRegistration.csv")
+studentVle <- import("studentVle.csv")
+vle <- import("vle.csv")
+```
+
+```{r}
+remove(df)
+df <- right_join(studentAssessment, studentInfo, by = "id_student")
+df <- left_join(df, assessments, by = c("id_assessment", "code_presentation", "code_module"))
+df <- full_join(df, courses, by = c("code_presentation", "code_module"))
+
+TMA <- assessments %>%
+  filter(assessment_type == "TMA") %>% 
+  select(assessment_type)
+
+df <- df %>% 
+  semi_join(TMA)
+```
+
+```{r}
+df$highest_education <- as.factor(df$highest_education)
+
+df <- df %>% 
+  group_by(highest_education, final_result, gender) %>% 
+  mutate(average_score = mean(score, na.rm = T))
+library(forcats)
+ggplot(df, aes(fct_reorder(highest_education, average_score), average_score)) +
+  geom_line(aes(group = highest_education), color = "cornflowerblue") + 
+  geom_point(aes(color = gender)) +             #CHANGE TO BLUE COLOR
+  coord_flip() +
+  facet_wrap(~fct_reorder(final_result, average_score), nrow = 4)+
+  theme_minimal()+
+  labs(
+    title = "Average TMA Scores",
+    subtitle = "Results displayed by Education, gender, and Final Result Designation",
+    caption = "Data from Kuzilek, Hlosta, & Zdrahal (2017).
+    https://analyse.kmi.open.ac.uk/open_dataset", 
+    x = "Highest Education",
+    y = "Average Score", 
+    fill = "Gender")
+```
+

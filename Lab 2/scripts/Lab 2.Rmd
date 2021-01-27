@@ -12,9 +12,34 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r}
+install.packages("fivethirtyeight")
+install.packages("remotes")
+remotes::install_github("fivethirtyeightdata/fivethirtyeightdata")
 library(fivethirtyeight)
 library(fivethirtyeightdata)
 
 google_trends <- data.frame(google_trends)
+tv_states <- data.frame(tv_states)
+```
+
+#Replicating National Cable News 
+```{r}
+library(dplyr)
+library(ggplot2)
+tv_states_long <- tidyr::pivot_longer(tv_states, c(florida, texas, puerto_rico))
+
+tv_states_long %>% 
+  ggplot(aes(date, value, group = name)) +
+  geom_line()+
+  geom_ribbon(aes(ymin=0, ymax = value, fill = name))+
+  scale_fill_manual(values = c("#FF33A8","#00AFBB", "#FF8133"))
+  #geom_text(aes(label = name))
+
+
+#FF8133 - orange
+#00AFBB - blue
+#FF33A8 - pink
+
+
 ```
 
