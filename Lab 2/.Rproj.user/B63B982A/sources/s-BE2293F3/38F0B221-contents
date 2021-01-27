@@ -1,0 +1,24 @@
+---
+title: "EDLD 2 - Lab 2"
+author: "Ann-Marie Barrett, Raleigh Goodwin, Kavya Mudiam, Zachary Schroeder,  Vinita Vader"
+date: "January 2021"
+output: html_document
+editor_options: 
+  chunk_output_type: inline
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+install.packages("fivethirtyeight")
+install.packages("remotes")
+remotes::install_github("fivethirtyeightdata/fivethirtyeightdata")
+library(fivethirtyeight)
+library(fivethirtyeightdata)
+
+google_trends <- data.frame(google_trends)
+tv_states <- data.frame(tv_states)
+```
+
