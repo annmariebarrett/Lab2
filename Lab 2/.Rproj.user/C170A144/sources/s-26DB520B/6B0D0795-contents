@@ -1,0 +1,127 @@
+---
+title: "EDLD 2 - Lab 1"
+author: "Ann-Marie Barrett, Raleigh Goodwin, Kavya Mudiam, Zachary Schroeder,  Vinita Vader"
+date: "January 2021"
+output: html_document
+editor_options: 
+  chunk_output_type: inline
+---
+```{r setup, include=FALSE}
+options(Encoding="UTF-8")
+knitr::opts_chunk$set(echo = FALSE,
+                      warnings = FALSE,
+                      message = FALSE,
+                      errors = TRUE,
+                      eval = TRUE,
+                      fig.width = 8, fig.height = 7)
+
+library(tidyverse)
+library(rio)
+library(here)
+library(janitor)
+library(stringr)
+library(forcats)
+library(ggplot2)
+library(lubridate)
+here::here()
+```
+
+## Plot 1 Version 1
+
+```{r}
+data = import(here::here("data", "rstats_tweets.rds"), setclass = "tb_df") %>% 
+  characterize() %>% 
+  clean_names()
+```
+
+```{r}
+# Creating reordered rows
+data_ordered <- data %>% 
+  select(screen_name) %>%
+  group_by(screen_name) %>% 
+  count() %>% 
+  arrange(desc(n)) 
+
+data_short <- data_ordered %>% 
+  as_tibble() %>% 
+  dplyr::slice(1:25)
+
+data_short %>% 
+  ggplot(aes(x = fct_reorder(screen_name, n), y = n))+
+  geom_bar(stat = "identity")+
+  coord_flip()
+
+```
+
+## Plot 1 Version 2
+
+```{r}
+
+data_short %>% 
+  ggplot(aes(x = fct_reorder(screen_name, n), y = n))+
+  geom_bar(stat = "identity", fill = "cornflowerblue", alpha = 0.9)+
+  coord_flip()+
+  labs(x = "Twitter Screen Name",
+       y = "Count",
+       title = "Most prolific #rstats tweeters",
+       subtitle = "Top 25 screennames displayed",
+       caption = "Data from Mike Kearny, distributed via #tidytuesday") +
+  theme_minimal()+
+  theme(plot.title = element_text(hjust = -.66),
+        plot.subtitle = element_text(hjust = -.62))+
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.grid.major.x = element_line(colour="gray", size=0.7))+ 
+   theme(plot.title = element_text(size=20),
+         plot.subtitle = element_text(size = 18),
+         axis.title.x = element_text(size=16),
+         axis.title.y = element_text(size=16),
+         axis.text = element_text(size=13),
+         plot.caption = element_text(size=13))
+
+```
+
+
+## Plot 2 Version 1
+
+```{r warning=F, message=F}
+
+data <- data %>%
+  mutate(month = round_date(data$created_at, # adding month variable
+                            unit = "month"))
+
+data %>% 
+  count(month) %>% 
+  ggplot(aes(x = month, y = n)) +
+  geom_line() +
+  geom_smooth() +
+  xlim(as_datetime("2008-09-01 00:00:00"), as_datetime("2018-12-31 00:00:00"))
+
+```
+
+
+## Plot 2 Version 2
+
+```{r warning=F, message=F}
+ 
+data %>% 
+  count(month) %>% 
+  ggplot(aes(x = month, y = n)) +
+  geom_line(aes(y=n), color = "gray28", size = 1.25) +
+  geom_ribbon(aes(ymin=0, ymax = n), fill = "#96b6e8", alpha = 0.5, color = "gray28") +
+  geom_smooth(color = "magenta", se = F, size = 1.25) +
+  xlim(as_datetime("2008-09-01 00:00:00"), as_datetime("2018-12-31 00:00:00"))+
+  theme_minimal() +
+  labs(y = "Number of #rstats tweets",
+       x = "Year (data summarized by month)",
+       title = "Growth of the #rstats hashtag on twitter over time",
+       caption = "Data from Mike Kearny, distributed via #tidytuesday") + 
+   theme(plot.title = element_text(size=20),
+         axis.title.x = element_text(size=16),
+         axis.title.y = element_text(size=16),
+         axis.text = element_text(size=13),
+         plot.caption = element_text(size=13)) +
+  theme(plot.title = element_text(hjust = -.9))
+
+```
+
