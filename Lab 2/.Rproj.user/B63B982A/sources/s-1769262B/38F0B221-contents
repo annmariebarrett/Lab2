@@ -35,10 +35,10 @@ annot <- data.frame(
   y = c(0.80, 1.5, 1.5)
 )
 
-names_df <- tv_states_long %>%
-  group_by(name) %>%
-  mutate(average = mean(value)) 
-names_df <- head(names_df, 3)
+#names_df <- tv_states_long %>%
+ # group_by(name) %>%
+#  mutate(average = mean(value)) 
+#names_df <- head(names_df, 3)
 
 tv_states_long %>%
     mutate(name = fct_relevel(name,
