@@ -52,6 +52,7 @@ plot = tv_states_long %>%
    guides(fill=FALSE)+
    theme_minimal()+ 
    geom_hline(yintercept=0, size=.3) +
+  geom_vline(xintercept = as.Date(tv_states_long$date[.75]), color = "grey90", size=.4) +
    geom_text(data = annot, aes(x=x, y=y, label = text), color="black", hjust=0, size=4, inherit.aes = FALSE, fontface = "bold")+
 
   
@@ -66,20 +67,24 @@ plot = tv_states_long %>%
    annotate( x=as.Date(tv_states_long$date[95]),y=2,label= 'atop(italic("Maria"),italic("landfall"))', geom="text", color = "grey", parse = TRUE, size = 3)+ #second anotate #HOW TO CHANGE LINE SPACE BETWEEN HARVEY LANDFALL
   
   geom_vline(aes(xintercept = as.Date(tv_states_long$date[127])), linetype="dotted", color = "grey90", size=.3)+ #third line
-   annotate( x=as.Date(tv_states_long$date[127]),y=3,label= 'atop(italic("Las Vegas"), italic("shooting"))', geom="text", color = "grey", parse = TRUE, size = 3, family = 'mono') #second anotate #HOW TO CHANGE LINE SPACE BETWEEN HARVEY LANDFALL
+   annotate( x=as.Date(tv_states_long$date[127]),y=3,label= 'atop(italic("Las Vegas"), italic("shooting"))', geom="text", color = "grey", parse = TRUE, size = 3) #second anotate #HOW TO CHANGE LINE SPACE BETWEEN HARVEY LANDFALL
+  
 
-font_families()  
-
-myFont2 <- "Roboto"
+myFont2 <- "mono"
 plot + theme(panel.grid.minor = element_blank(), 
              panel.background = element_blank(),
              plot.title = element_text(size=11, face="bold", hjust = 0.5),
              axis.title.x = element_blank(),
-             axis.title.y = element_text(size=11, face="bold"))
+             axis.title.y = element_text(size=11, face="bold"))#, family = 'mono'))
+           #  text = element_text(size = 16, family = myFont2))
 
+#font_families()
+#text = element_text(size = 16, family = myFont1
 #How to change the font for x-axis labels? KM: I wonder if we should change it to all caps in the dataframe... I'm not able to find how to change the font type 
 #How to make annotate text italic? KM: done 
 #How to keep the main title at the center?:done
+#line spacing
+
 
 #FF8133 - orange
 #00AFBB - blue
