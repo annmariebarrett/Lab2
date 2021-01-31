@@ -31,9 +31,9 @@ tv_states_long <- pivot_longer(tv_states, c(florida, texas, puerto_rico))
 # A dataframe for annotations
 annot = data.frame(
   text = c("Texas", "Florida", "Puerto Rico"),
-  x = lubridate::mdy(c("August 26, 2017",
-                       "September 7, 2017",
-                       "September 22, 2017")),
+  x = lubridate::mdy(c("AUGUST 26, 2017",
+                       "SEPTEMBER 7, 2017",
+                       "SEPTEMBER 22, 2017")),
   y = c(0.80, 1.5, 1.5)
 )
 
@@ -51,31 +51,32 @@ plot = tv_states_long %>%
    theme_minimal()+ 
    geom_hline(yintercept=0, size=.3) +
    geom_text(data = annot, aes(x=x, y=y, label = text), color="black", hjust=0, size=4, inherit.aes = FALSE, fontface = "bold")+
+
   
   
   
   geom_vline(aes(xintercept = as.Date(tv_states_long$date[18])), linetype="dotted", color = "grey90", size=.4)+ #first line
-    annotate( x=as.Date(tv_states_long$date[16]),y=3,label= 'atop("Harvey","landfall")', geom="text", color = "grey", parse = TRUE, size = 3, fontface = "italic")+ #first anotate #ITALIC NOT WORKING!!, HOW TO CHANGE LINE SPACE BETWEEN HARVEY LANDFALL
+    annotate( x=as.Date(tv_states_long$date[16]),y=3,label= 'atop(italic("Harvey"),italic("landfall"))', geom="text", color = "grey", parse = TRUE, size = 3)+ #first anotate #HOW TO CHANGE LINE SPACE BETWEEN HARVEY LANDFALL
   
     geom_vline(aes(xintercept = as.Date(tv_states_long$date[64])), linetype="dotted", color = "grey90", size=.3) + #second line
-  annotate( x=as.Date(tv_states_long$date[70]),y=3.2,label= 'atop("Irma","landfall")', geom="text", color = "grey", parse = TRUE, size = 3, fontface = "italic")+ #second anotate #ITALIC NOT WORKING!!, HOW TO CHANGE LINE SPACE BETWEEN HARVEY LANDFALL
+  annotate( x=as.Date(tv_states_long$date[70]),y=3.2,label= 'atop(italic("Irma"),italic("landfall"))', geom="text", color = "grey", parse = TRUE, size = 3)+ #second anotate # HOW TO CHANGE LINE SPACE BETWEEN HARVEY LANDFALL
   
    geom_vline(aes(xintercept = as.Date(tv_states_long$date[95])), linetype="dotted", color = "grey90", size=.3) + #fourth line
-   annotate( x=as.Date(tv_states_long$date[95]),y=2,label= 'atop("Maria","landfall")', geom="text", color = "grey", parse = TRUE, size = 3, fontface = "italic")+ #second anotate #ITALIC NOT WORKING!!, HOW TO CHANGE LINE SPACE BETWEEN HARVEY LANDFALL
+   annotate( x=as.Date(tv_states_long$date[95]),y=2,label= 'atop(italic("Maria"),italic("landfall"))', geom="text", color = "grey", parse = TRUE, size = 3)+ #second anotate #HOW TO CHANGE LINE SPACE BETWEEN HARVEY LANDFALL
   
   geom_vline(aes(xintercept = as.Date(tv_states_long$date[127])), linetype="dotted", color = "grey90", size=.3)+ #third line
-   annotate( x=as.Date(tv_states_long$date[127]),y=3,label= 'atop("Las Vegas","shooting")', geom="text", color = "grey", parse = TRUE, size = 3, fontface = "italic") #second anotate #ITALIC NOT WORKING!!, HOW TO CHANGE LINE SPACE BETWEEN HARVEY LANDFALL
+   annotate( x=as.Date(tv_states_long$date[127]),y=3,label= 'atop(italic("Las Vegas"), italic("shooting"))', geom="text", color = "grey", parse = TRUE, size = 3) #second anotate #HOW TO CHANGE LINE SPACE BETWEEN HARVEY LANDFALL
   
 
 plot + theme(panel.grid.minor = element_blank(), 
              panel.background = element_blank(),
-             plot.title = element_text(size=11, face="bold"),
+             plot.title = element_text(size=11, face="bold", hjust = 0.5),
              axis.title.x = element_blank(),
              axis.title.y = element_text(size=11, face="bold"))
 
-#How to change the font for x-axis labels?
-#How to make annotate text italic?
-#How to keep the main title at the center?
+#How to change the font for x-axis labels? KM: I wonder if we should change it to all caps in the dataframe... I'm not able to find how to change the font type 
+#How to make annotate text italic? KM: done 
+#How to keep the main title at the center?:done
 
 #FF8133 - orange
 #00AFBB - blue
