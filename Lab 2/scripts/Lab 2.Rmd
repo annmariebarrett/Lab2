@@ -4,7 +4,7 @@ author: "Ann-Marie Barrett, Raleigh Goodwin, Kavya Mudiam, Zachary Schroeder,  V
 date: "January 2021"
 output: html_document
 editor_options: 
-  chunk_output_type: inline
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
@@ -29,37 +29,56 @@ tv_states <- data.frame(tv_states)
 tv_states_long <- pivot_longer(tv_states, c(florida, texas, puerto_rico))
 
 # A dataframe for annotations
-annot <- data.frame(
+annot = data.frame(
   text = c("Texas", "Florida", "Puerto Rico"),
-  x = c(7, 15, 25),
+  x = lubridate::mdy(c("August 26, 2017",
+                       "September 7, 2017",
+                       "September 22, 2017")),
   y = c(0.80, 1.5, 1.5)
 )
 
-#names_df <- tv_states_long %>%
- # group_by(name) %>%
-#  mutate(average = mean(value)) 
-#names_df <- head(names_df, 3)
 
-tv_states_long %>%
+plot = tv_states_long %>%
     mutate(name = fct_relevel(name,
             "florida", "texas", "puerto_rico")) %>%
-  ggplot(aes(x = date, y = value, group = name, fill = name)) +
+  ggplot(aes(x = date, y = value, group = name)) +
    geom_line()+
    geom_ribbon(aes(ymin=0, ymax = value, fill = name), color = "white")+
    scale_fill_manual(values = c("#FF33A8", "#FF8133", "#00AFBB"))+
-   labs(x = "Date",
-       y = "Share of sentences",
+   labs( y = "Share of sentences",
        title = "National cable news networks")+
    guides(fill=FALSE)+
    theme_minimal()+ 
-   geom_text(aes(x=x, y=y, label = text, color=text), hjust=0, size=4.5, data = annot)
-   #geom_text(aes(label = name), data = names_df)
+   geom_hline(yintercept=0, size=.3) +
+   geom_text(data = annot, aes(x=x, y=y, label = text), color="black", hjust=0, size=4, inherit.aes = FALSE, fontface = "bold")+
+  
+  
+  
+  geom_vline(aes(xintercept = as.Date(tv_states_long$date[18])), linetype="dotted", color = "grey90", size=.4)+ #first line
+    annotate( x=as.Date(tv_states_long$date[16]),y=3,label= 'atop("Harvey","landfall")', geom="text", color = "grey", parse = TRUE, size = 3, fontface = "italic")+ #first anotate #ITALIC NOT WORKING!!, HOW TO CHANGE LINE SPACE BETWEEN HARVEY LANDFALL
+  
+    geom_vline(aes(xintercept = as.Date(tv_states_long$date[64])), linetype="dotted", color = "grey90", size=.3) + #second line
+  annotate( x=as.Date(tv_states_long$date[70]),y=3.2,label= 'atop("Irma","landfall")', geom="text", color = "grey", parse = TRUE, size = 3, fontface = "italic")+ #second anotate #ITALIC NOT WORKING!!, HOW TO CHANGE LINE SPACE BETWEEN HARVEY LANDFALL
+  
+   geom_vline(aes(xintercept = as.Date(tv_states_long$date[95])), linetype="dotted", color = "grey90", size=.3) + #fourth line
+   annotate( x=as.Date(tv_states_long$date[95]),y=2,label= 'atop("Maria","landfall")', geom="text", color = "grey", parse = TRUE, size = 3, fontface = "italic")+ #second anotate #ITALIC NOT WORKING!!, HOW TO CHANGE LINE SPACE BETWEEN HARVEY LANDFALL
+  
+  geom_vline(aes(xintercept = as.Date(tv_states_long$date[127])), linetype="dotted", color = "grey90", size=.3)+ #third line
+   annotate( x=as.Date(tv_states_long$date[127]),y=3,label= 'atop("Las Vegas","shooting")', geom="text", color = "grey", parse = TRUE, size = 3, fontface = "italic") #second anotate #ITALIC NOT WORKING!!, HOW TO CHANGE LINE SPACE BETWEEN HARVEY LANDFALL
+  
 
+plot + theme(panel.grid.minor = element_blank(), 
+             panel.background = element_blank(),
+             plot.title = element_text(size=11, face="bold"),
+             axis.title.x = element_blank(),
+             axis.title.y = element_text(size=11, face="bold"))
 
+#How to change the font for x-axis labels?
+#How to make annotate text italic?
+#How to keep the main title at the center?
 
 #FF8133 - orange
 #00AFBB - blue
 #FF33A8 - pink
-
 ```
 
