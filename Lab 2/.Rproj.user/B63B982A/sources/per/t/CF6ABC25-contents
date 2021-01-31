@@ -67,14 +67,14 @@ plot = tv_states_long %>%
   geom_vline(aes(xintercept = as.Date(tv_states_long$date[18])), linetype="dotted", color = "grey90", size=.4)+ #first line
     annotate( x=as.Date(tv_states_long$date[16]),y=3,label= 'atop(italic("Harvey"),italic("landfall"))', geom="text", color = "grey", parse = TRUE, size = 3)+ #first anotate #HOW TO CHANGE LINE SPACE BETWEEN HARVEY LANDFALL
   
-    geom_vline(aes(xintercept = as.Date(tv_states_long$date[64])), linetype="dotted", color = "grey90", size=.3) + #second line
+    geom_vline(aes(xintercept = as.Date(tv_states_long$date[68])), linetype="dotted", color = "grey90", size=.3) + #second line
   annotate( x=as.Date(tv_states_long$date[70]),y=3.2,label= 'atop(italic("Irma"),italic("landfall"))', geom="text", color = "grey", parse = TRUE, size = 3)+ #second anotate # HOW TO CHANGE LINE SPACE BETWEEN HARVEY LANDFALL
   
-   geom_vline(aes(xintercept = as.Date(tv_states_long$date[95])), linetype="dotted", color = "grey90", size=.3) + #fourth line
-   annotate( x=as.Date(tv_states_long$date[95]),y=2,label= 'atop(italic("Maria"),italic("landfall"))', geom="text", color = "grey", parse = TRUE, size = 3)+ #second anotate #HOW TO CHANGE LINE SPACE BETWEEN HARVEY LANDFALL
+   geom_vline(aes(xintercept = as.Date(tv_states_long$date[98])), linetype="dotted", color = "grey90", size=.3) + #fourth line
+   annotate( x=as.Date(tv_states_long$date[98]),y=2,label= 'atop(italic("Maria"),italic("landfall"))', geom="text", color = "grey", parse = TRUE, size = 3)+ #second anotate #HOW TO CHANGE LINE SPACE BETWEEN HARVEY LANDFALL
   
-  geom_vline(aes(xintercept = as.Date(tv_states_long$date[127])), linetype="dotted", color = "grey90", size=.3)+ #third line
-   annotate( x=as.Date(tv_states_long$date[1]),y=3,label= 'atop(italic("Las Vegas"), italic("shooting"))', geom="text", color = "grey", parse = TRUE, size = 3) + #second anotate #HOW TO CHANGE LINE SPACE BETWEEN HARVEY LANDFALL 
+  geom_vline(aes(xintercept = as.Date(tv_states_long$date[130])), linetype="dotted", color = "grey90", size=.3)+ #third line
+   annotate( x=as.Date(tv_states_long$date[130]),y=3,label= 'atop(italic("Las Vegas"), italic("shooting"))', geom="text", color = "grey", parse = TRUE, size = 3) + #second anotate #HOW TO CHANGE LINE SPACE BETWEEN HARVEY LANDFALL 
    scale_y_continuous(label=function(x){return(paste(x, "%"))})
 
   
