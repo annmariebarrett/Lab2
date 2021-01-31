@@ -39,6 +39,13 @@ annot = data.frame(
   y = c(0.80, 1.5, 1.5)
 )
 
+date <- c("2017-08-15","2017-08-15", "2017-08-15")
+name <- c("texas", "florida", "puerto_rico")
+value <- c(0,0,0)
+
+aug15 <- data.frame(date, name, value)
+aug15$date <- as.Date(aug15$date)
+tv_states_long <- rbind(aug15, tv_states_long)
 
 plot = tv_states_long %>%
     mutate(name = fct_relevel(name,
@@ -67,7 +74,9 @@ plot = tv_states_long %>%
    annotate( x=as.Date(tv_states_long$date[95]),y=2,label= 'atop(italic("Maria"),italic("landfall"))', geom="text", color = "grey", parse = TRUE, size = 3)+ #second anotate #HOW TO CHANGE LINE SPACE BETWEEN HARVEY LANDFALL
   
   geom_vline(aes(xintercept = as.Date(tv_states_long$date[127])), linetype="dotted", color = "grey90", size=.3)+ #third line
-   annotate( x=as.Date(tv_states_long$date[127]),y=3,label= 'atop(italic("Las Vegas"), italic("shooting"))', geom="text", color = "grey", parse = TRUE, size = 3) #second anotate #HOW TO CHANGE LINE SPACE BETWEEN HARVEY LANDFALL
+   annotate( x=as.Date(tv_states_long$date[1]),y=3,label= 'atop(italic("Las Vegas"), italic("shooting"))', geom="text", color = "grey", parse = TRUE, size = 3) + #second anotate #HOW TO CHANGE LINE SPACE BETWEEN HARVEY LANDFALL 
+   scale_y_continuous(label=function(x){return(paste(x, "%"))})
+
   
 
 myFont2 <- "mono"
@@ -84,7 +93,7 @@ plot + theme(panel.grid.minor = element_blank(),
 #How to make annotate text italic? KM: done 
 #How to keep the main title at the center?:done
 #line spacing
-
+#need to change the dotted line position to match with the solid lines. Got changed because we added Aug 15 into the x axis 
 
 #FF8133 - orange
 #00AFBB - blue
