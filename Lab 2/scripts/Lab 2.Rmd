@@ -18,3 +18,13 @@ library(fivethirtyeightdata)
 google_trends <- data.frame(google_trends)
 ```
 
+#Comic Characters
+
+```{r}
+library(tidyverse)
+comic_characters <- data.frame(comic_characters)
+str(comic_characters)
+comic_characters$sex <- factor(comic_characters$sex)
+
+```
+
