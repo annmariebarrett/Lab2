@@ -22,6 +22,7 @@ library(tidyverse)
 ```{r}
 google_trends <- data.frame(google_trends)
 
+# Pivoting data long to make easier to plot
 google_trends_long <- google_trends %>% 
   mutate(Harvey = hurricane_harvey_us,
          Irma = hurricane_irma_us,
@@ -31,6 +32,8 @@ google_trends_long <- google_trends %>%
 
 google_trends_long <- gather(google_trends_long, "Hurricane", "Articles", Harvey:Jose, factor_key = T)
 
+# First visualization
+
 google_trends_long %>% 
   ggplot(aes(date, Articles)) + 
   geom_line(aes(color = Hurricane)) +
@@ -38,6 +41,13 @@ google_trends_long %>%
        x = "Date") + #tbh I'm not totally sure what the y axis represents lol
   theme_minimal()
 
+# Visualization with solid shapes
+
+# Same relation but color continuous
+
+# Landfall dates included
+
+# Final modifications
 
 ```
 
