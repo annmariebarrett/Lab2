@@ -15,6 +15,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(fivethirtyeight)
 library(fivethirtyeightdata)
 library(tidyverse)
+library(lubridate)
 
 ```
 
@@ -43,9 +44,23 @@ google_trends_long %>%
 
 # Visualization with solid shapes
 
-# Same relation but color continuous
+google_trends_long %>% 
+  ggplot(aes(date, Articles)) + 
+  geom_ribbon(aes(ymin = 0, ymax = Articles, 
+                  fill = Hurricane),
+              alpha = .7) +
+  labs(title = "2017 Hurricane Season Google Trends",
+       x = "Date") +
+  theme_minimal()
+
+# Same relation but color continuous (???)
 
 # Landfall dates included
+
+google_trends_landfall <- tibble(
+  landfall = c(ymd(20170825), ymd(20170910), ymd(20170920)),
+  storm = c("Harvey", "Irma", "Maria")
+  )
 
 # Final modifications
 
