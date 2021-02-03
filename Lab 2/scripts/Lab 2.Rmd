@@ -11,20 +11,95 @@ editor_options:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r}
+```{r Packages, include=FALSE}
 library(fivethirtyeight)
 library(fivethirtyeightdata)
 library(tidyverse)
 library(ggplot2)
 library(showtext)
+library(tidyverse)
+library(lubridate)
+library(rio)
+library(here)
+library(janitor)
+library(stringr)
+library(forcats)
+library(ggplot2)
+library(lubridate)
+library(ggforce)
+library(ggthemes)
+library(colorblindr)
 
+```
+
+# #1
+```{r}
 google_trends <- data.frame(google_trends)
 tv_states <- data.frame(tv_states)
+
+# Pivoting data long to make easier to plot
+google_trends_long <- google_trends %>% 
+  mutate(Harvey = hurricane_harvey_us,
+         Irma = hurricane_irma_us,
+         Maria = hurricane_maria_us,
+         Jose = hurricane_jose_us) %>% 
+  select(date, Harvey, Irma, Maria, Jose)
+
+google_trends_long <- gather(google_trends_long, "Hurricane", "Searches", Harvey:Jose, factor_key = T)
+
+# First visualization
+
+google_trends_long %>% 
+  ggplot(aes(date, Searches)) + 
+  geom_line(aes(color = Hurricane)) +
+  labs(title = "2017 Hurricane Season Google Trends",
+       x = "Date") + #tbh I'm not totally sure what the y axis represents lol
+  theme_minimal()
+
+# Visualization with solid shapes
+
+plot <- google_trends_long %>% 
+  ggplot(aes(date, Searches)) + 
+  geom_ribbon(aes(ymin = 0, ymax = Searches, 
+                  fill = Hurricane),
+              alpha = .7) +
+  labs(title = "2017 Hurricane Season Google Trends",
+       x = "Date") +
+  theme_minimal()
+
+# Same relation but color continuous
+
+google_trends_long %>% 
+  #group_by(Hurricane, date) %>% 
+  ggplot(aes(date, Hurricane)) +
+  geom_tile(aes(fill = Searches), 
+            color = "white") +
+  coord_fixed() +
+  scale_fill_viridis_c(direction = -1, option = "plasma")
+
+# Landfall dates included
+
+google_trends_landfall <- tibble(
+  landfall = c(ymd(20170825), ymd(20170910), ymd(20170920)),
+  storm = c("Harvey", "Irma", "Maria")
+  )
+
+plot + 
+  geom_vline(data = google_trends_landfall, aes(xintercept = landfall)) + 
+  geom_text(aes(x = ymd(20170825)+1, label = "Harvey landfall", y = 80, angle = 90)) +
+  geom_text(aes(x = ymd(20170910)+1, label = "Irma landfall", y = 80, angle = 90)) +
+  geom_text(aes(x = ymd(20170920)+1, label = "Maria landfall", y = 80, angle = 90, ))
+
+#Final modifications 
+
+#tbd
+
 ```
 
 #Replicating National Cable News 
 ```{r}
 tv_states_long <- pivot_longer(tv_states, c(florida, texas, puerto_rico))
+# Comic Characters
 
 # A dataframe for annotations
 annot = data.frame(
@@ -94,5 +169,129 @@ plot + theme(panel.grid.minor = element_blank(),
 #FF8133 - orange
 #00AFBB - blue
 #FF33A8 - pink
+```
+
+
+```{r CC Data Cleaning & Variable Creation, include=FALSE}
+library(tidyverse)
+comic_characters <- data.frame(comic_characters)
+str(comic_characters)
+comic_characters$gender <- factor(comic_characters$sex)
+comic_characters$alive <- factor(comic_characters$alive)
+comic_characters$fyear <- factor(comic_characters$year)
+#comic_characters <- comic_characters %>%
+ # mutate(month = round_date(data$created_at, # May want to add year variable
+  #                          unit = "month"))
+```
+
+## Figure 1: Simple, not too helpful bar chart
+
+```{r CC Figure 1, warning=FALSE}
+comic_characters %>% 
+  ggplot(aes(x = gender, fill = gender)) +
+  geom_bar() +
+  labs(title = "Number of Each Gender Identity Represented in Comic Books",
+       subtitle = "A not-so-helpful figure",
+       x = "Gender Identity",
+       y = "N") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_fill_OkabeIto()
+```
+
+## Figure 2: Line graph of sum over time with different line for genders
+
+```{r CC Figure 2, warning=FALSE}
+comic_characters %>% 
+  group_by(gender) %>% 
+  count(year) %>% 
+  ggplot(aes(x = year, y = n, color = gender)) +
+  geom_path() +
+  labs(title = "Number of Each Gender Identity Introduced in Per Year",
+       subtitle = "A somewhat helpful figure",
+       x = "Year",
+       y = "N",
+       color = "Gender Identity")+
+  scale_colour_OkabeIto()
+```
+
+
+## Change in Gender Representation Proportion Over Time
+
+```{r CC Figure 3, warning=FALSE, message=FALSE}
+cc <- comic_characters %>% 
+  group_by(gender) %>% 
+  group_by(fyear, .add = T) %>% 
+  summarise(no_rows = length(year)) %>% # This creates a long df that counts the number of each gender per year
+  spread(., key = fyear, value = no_rows) %>% #this creates a wide version by year
+  t(.) %>% # Makes each gender identity a column
+  data.frame(.) %>% 
+  janitor::row_to_names(row_number = 1)
+  
+#Creating Column Names
+colnames(cc) <- c("Agender", "Female", "Genderfluid", "Genderless", "Male", "Transgender", "NA_Gender")
+#Saving Years
+cc <- cc %>% 
+  mutate(
+    year = rownames(cc)
+  )
+
+# Making all columns numeric
+cc <- mutate_all(cc, function(x) as.numeric(as.character(x))) %>% 
+  filter(year != "NA")
+
+# Replacing NAs with 0
+cc[is.na(cc)] <- 0
+
+# Calculating Cumsums
+cc_cum <- cc %>% 
+  mutate(
+    Agender = cumsum(Agender),
+    Female = cumsum(Female),
+    Genderfluid = cumsum(Genderfluid),
+    Genderless = cumsum(Genderless),
+    Male = cumsum(Male),
+    Transgender = cumsum(Transgender),
+    NA_Gender = cumsum(NA_Gender)
+  )
+
+#Creating Loop to get row-wise proportions
+cc_loop <- cc_cum[,1:6]
+cc_prop <- cc_cum[,1:6]
+for(j in 1:nrow(cc_loop)){
+  for(i in 1:ncol(cc_loop)){
+    cc_prop[j,i] <- (cc_loop[j,i]/rowSums(cc_loop[j,]))
+  }
+}
+rm(cc_loop)
+
+#Creating Long Dataframe
+cc_prop$year <- cc_cum$year
+cc_proplong <- gather(cc_prop, key = "year")
+cc_proplong$yr <- rep(cc_cum$year, ncol(cc_prop)-1)
+colnames(cc_proplong) <- c("Gender", "Prop", "Year")
+cc_proplong$Gender <- factor(cc_proplong$Gender, 
+                             levels = c("Male", "Female", "Agender",  
+                                        "Genderfluid","Genderless", "Transgender"))
+cc_proplong$scale <- c(rep("Non-Cis", nrow(cc_prop)),
+                       rep("Cis", nrow(cc_prop)),
+                       rep("Non-Cis", nrow(cc_prop)),
+                       rep("Non-Cis", nrow(cc_prop)),
+                       rep("Cis", nrow(cc_prop)),
+                       rep("Non-Cis", nrow(cc_prop)))
+
+cc_proplong %>% 
+  ggplot(aes(x = Year, y = Prop, color = Gender)) +
+  geom_line() +
+  labs(title = "Proportional Gender Representation in Comics",
+       subtitle = "Proportions calculated cumulatively",
+       y = "Gender (Percent)",
+       caption = "Data taken from 538's fivethirtyeightdata package") +
+  theme_linedraw() +
+  facet_zoom(ylim = c(0,0.002),
+             zoom.size = 1) +
+  scale_colour_OkabeIto()
+
+  
 ```
 
