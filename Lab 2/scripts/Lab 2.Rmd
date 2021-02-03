@@ -4,7 +4,7 @@ author: "Ann-Marie Barrett, Raleigh Goodwin, Kavya Mudiam, Zachary Schroeder,  V
 date: "January 2021"
 output: html_document
 editor_options: 
-  chunk_output_type: console
+  chunk_output_type: inline
 ---
 
 ```{r setup, include=FALSE}
@@ -88,11 +88,27 @@ plot +
   geom_vline(data = google_trends_landfall, aes(xintercept = landfall)) + 
   geom_text(aes(x = ymd(20170825)+1, label = "Harvey landfall", y = 80, angle = 90)) +
   geom_text(aes(x = ymd(20170910)+1, label = "Irma landfall", y = 80, angle = 90)) +
-  geom_text(aes(x = ymd(20170920)+1, label = "Maria landfall", y = 80, angle = 90, ))
+  geom_text(aes(x = ymd(20170920)+1, label = "Maria landfall", y = 80, angle = 90))
 
 #Final modifications 
 
-#tbd
+google_trends_long %>% 
+  ggplot(aes(date, Searches)) + 
+  geom_ribbon(aes(ymin = 0, ymax = Searches, 
+                  fill = Hurricane),
+              alpha = .65) +
+  geom_vline(data = google_trends_landfall, aes(xintercept = landfall)) + 
+  geom_text(aes(x = ymd(20170825)+1, label = "Harvey landfall", y = 80, angle = 90)) +
+  geom_text(aes(x = ymd(20170910)+1, label = "Irma landfall", y = 80, angle = 90)) +
+  geom_text(aes(x = ymd(20170920)+1, label = "Maria landfall", y = 80, angle = 90)) +
+  labs(title = "2017 Hurricane Season Google Trends",
+       x = "Date") +
+  scale_fill_viridis_d(option = "plasma") +
+  theme_minimal() +
+   theme(plot.title = element_text(size=17),
+         axis.title.x = element_text(size=13),
+         axis.title.y = element_text(size=13),
+         axis.text = element_text(size=11))
 
 ```
 
