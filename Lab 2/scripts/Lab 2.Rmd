@@ -53,7 +53,7 @@ google_trends_long %>%
   ggplot(aes(date, Searches)) + 
   geom_line(aes(color = Hurricane)) +
   labs(title = "2017 Hurricane Season Google Trends",
-       x = "Date") + #tbh I'm not totally sure what the y axis represents lol
+       x = "Date") + 
   theme_minimal()
 
 # Visualization with solid shapes
