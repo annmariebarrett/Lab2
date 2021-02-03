@@ -31,12 +31,12 @@ google_trends_long <- google_trends %>%
          Jose = hurricane_jose_us) %>% 
   select(date, Harvey, Irma, Maria, Jose)
 
-google_trends_long <- gather(google_trends_long, "Hurricane", "Articles", Harvey:Jose, factor_key = T)
+google_trends_long <- gather(google_trends_long, "Hurricane", "Searches", Harvey:Jose, factor_key = T)
 
 # First visualization
 
 google_trends_long %>% 
-  ggplot(aes(date, Articles)) + 
+  ggplot(aes(date, Searches)) + 
   geom_line(aes(color = Hurricane)) +
   labs(title = "2017 Hurricane Season Google Trends",
        x = "Date") + #tbh I'm not totally sure what the y axis represents lol
@@ -45,8 +45,8 @@ google_trends_long %>%
 # Visualization with solid shapes
 
 plot <- google_trends_long %>% 
-  ggplot(aes(date, Articles)) + 
-  geom_ribbon(aes(ymin = 0, ymax = Articles, 
+  ggplot(aes(date, Searches)) + 
+  geom_ribbon(aes(ymin = 0, ymax = Searches, 
                   fill = Hurricane),
               alpha = .7) +
   labs(title = "2017 Hurricane Season Google Trends",
@@ -58,7 +58,7 @@ plot <- google_trends_long %>%
 google_trends_long %>% 
   #group_by(Hurricane, date) %>% 
   ggplot(aes(date, Hurricane)) +
-  geom_tile(aes(fill = Articles), 
+  geom_tile(aes(fill = Searches), 
             color = "white") +
   coord_fixed() +
   scale_fill_viridis_c(direction = -1, option = "plasma")
@@ -71,12 +71,12 @@ google_trends_landfall <- tibble(
   )
 
 plot + 
-  geom_vline(data = google_trends_landfall, aes(xintercept = landfall))
+  geom_vline(data = google_trends_landfall, aes(xintercept = landfall)) + 
+  geom_text(aes(x = ymd(20170825)+1, label = "Harvey landfall", y = 80, angle = 90)) +
+  geom_text(aes(x = ymd(20170910)+1, label = "Irma landfall", y = 80, angle = 90)) +
+  geom_text(aes(x = ymd(20170920)+1, label = "Maria landfall", y = 80, angle = 90, ))
 
-
-
-# Final modifications
-#ideas: center Title, specify Y axis label, 
+#Final modifications 
 
 ```
 
