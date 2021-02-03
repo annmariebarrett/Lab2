@@ -14,6 +14,8 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r Packages, include=FALSE}
 library(fivethirtyeight)
 library(fivethirtyeightdata)
+library(tidyverse)
+library(lubridate)
 library(rio)
 library(here)
 library(janitor)
@@ -25,7 +27,67 @@ library(ggforce)
 library(ggthemes)
 library(colorblindr)
 
+```
+
+# #1
+```{r}
 google_trends <- data.frame(google_trends)
+
+# Pivoting data long to make easier to plot
+google_trends_long <- google_trends %>% 
+  mutate(Harvey = hurricane_harvey_us,
+         Irma = hurricane_irma_us,
+         Maria = hurricane_maria_us,
+         Jose = hurricane_jose_us) %>% 
+  select(date, Harvey, Irma, Maria, Jose)
+
+google_trends_long <- gather(google_trends_long, "Hurricane", "Searches", Harvey:Jose, factor_key = T)
+
+# First visualization
+
+google_trends_long %>% 
+  ggplot(aes(date, Searches)) + 
+  geom_line(aes(color = Hurricane)) +
+  labs(title = "2017 Hurricane Season Google Trends",
+       x = "Date") + #tbh I'm not totally sure what the y axis represents lol
+  theme_minimal()
+
+# Visualization with solid shapes
+
+plot <- google_trends_long %>% 
+  ggplot(aes(date, Searches)) + 
+  geom_ribbon(aes(ymin = 0, ymax = Searches, 
+                  fill = Hurricane),
+              alpha = .7) +
+  labs(title = "2017 Hurricane Season Google Trends",
+       x = "Date") +
+  theme_minimal()
+
+# Same relation but color continuous
+
+google_trends_long %>% 
+  #group_by(Hurricane, date) %>% 
+  ggplot(aes(date, Hurricane)) +
+  geom_tile(aes(fill = Searches), 
+            color = "white") +
+  coord_fixed() +
+  scale_fill_viridis_c(direction = -1, option = "plasma")
+
+# Landfall dates included
+
+google_trends_landfall <- tibble(
+  landfall = c(ymd(20170825), ymd(20170910), ymd(20170920)),
+  storm = c("Harvey", "Irma", "Maria")
+  )
+
+plot + 
+  geom_vline(data = google_trends_landfall, aes(xintercept = landfall)) + 
+  geom_text(aes(x = ymd(20170825)+1, label = "Harvey landfall", y = 80, angle = 90)) +
+  geom_text(aes(x = ymd(20170910)+1, label = "Irma landfall", y = 80, angle = 90)) +
+  geom_text(aes(x = ymd(20170920)+1, label = "Maria landfall", y = 80, angle = 90, ))
+
+#Final modifications 
+
 ```
 
 # Comic Characters
