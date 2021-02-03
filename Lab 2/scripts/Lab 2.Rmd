@@ -12,10 +12,6 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r}
-#install.packages("fivethirtyeight")
-#install.packages("remotes")
-#remotes::install_github("fivethirtyeightdata/fivethirtyeightdata")
-#install.packages('showtext', dependencies = TRUE)
 library(fivethirtyeight)
 library(fivethirtyeightdata)
 library(tidyverse)
