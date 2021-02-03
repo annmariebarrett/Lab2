@@ -44,7 +44,7 @@ google_trends_long %>%
 
 # Visualization with solid shapes
 
-google_trends_long %>% 
+plot <- google_trends_long %>% 
   ggplot(aes(date, Articles)) + 
   geom_ribbon(aes(ymin = 0, ymax = Articles, 
                   fill = Hurricane),
@@ -53,7 +53,15 @@ google_trends_long %>%
        x = "Date") +
   theme_minimal()
 
-# Same relation but color continuous (???)
+# Same relation but color continuous
+
+google_trends_long %>% 
+  #group_by(Hurricane, date) %>% 
+  ggplot(aes(date, Hurricane)) +
+  geom_tile(aes(fill = Articles), 
+            color = "white") +
+  coord_fixed() +
+  scale_fill_viridis_c(direction = -1, option = "plasma")
 
 # Landfall dates included
 
@@ -62,7 +70,13 @@ google_trends_landfall <- tibble(
   storm = c("Harvey", "Irma", "Maria")
   )
 
+plot + 
+  geom_vline(data = google_trends_landfall, aes(xintercept = landfall))
+
+
+
 # Final modifications
+#ideas: center Title, specify Y axis label, 
 
 ```
 
