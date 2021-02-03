@@ -42,7 +42,7 @@ comic_characters$fyear <- factor(comic_characters$year)
   #                          unit = "month"))
 ```
 
-## Simple, not too helpful bar chart
+## Figure 1: Simple, not too helpful bar chart
 
 ```{r CC Figure 1, warning=FALSE}
 comic_characters %>% 
@@ -57,7 +57,7 @@ comic_characters %>%
   scale_fill_OkabeIto()
 ```
 
-## Line graph of sum over time wiht different line for genders
+## Figure 2: Line graph of sum over time with different line for genders
 
 ```{r CC Figure 2, warning=FALSE}
 comic_characters %>% 
