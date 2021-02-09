@@ -12,20 +12,22 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r Packages, include=FALSE}
+# try not to load packages twice or packages that you don't need in the script
+
 library(fivethirtyeight)
 library(fivethirtyeightdata)
 library(tidyverse)
-library(ggplot2)
+#library(ggplot2)
 library(showtext)
-library(tidyverse)
+#library(tidyverse)
 library(lubridate)
 library(rio)
 library(here)
 library(janitor)
 library(stringr)
-library(forcats)
-library(ggplot2)
-library(lubridate)
+#library(forcats)
+#library(ggplot2)
+#library(lubridate)
 library(ggforce)
 library(ggthemes)
 library(colorblindr)
@@ -34,8 +36,9 @@ library(colorblindr)
 
 # #1
 ```{r}
-google_trends <- data.frame(google_trends)
-tv_states <- data.frame(tv_states)
+# Shouldn't need either of the lines below
+# google_trends <- data.frame(google_trends)
+# tv_states <- data.frame(tv_states)
 
 # Pivoting data long to make easier to plot
 google_trends_long <- google_trends %>% 
@@ -45,7 +48,16 @@ google_trends_long <- google_trends %>%
          Jose = hurricane_jose_us) %>% 
   select(date, Harvey, Irma, Maria, Jose)
 
-google_trends_long <- gather(google_trends_long, "Hurricane", "Searches", Harvey:Jose, factor_key = T)
+# I'd suggest moving to pivot_longer, as I illustrated today
+# Also, try to get in the habit of not going beyond 80 characters
+# You can set a ruler to help this
+# I would also not use T for TRUE because it can be overwritten, 
+# e.g. T <- FALSE
+google_trends_long <- gather(google_trends_long, 
+                             "Hurricane", 
+                             "Searches", 
+                             Harvey:Jose, 
+                             factor_key = TRUE) #
 
 # First visualization
 
@@ -91,7 +103,6 @@ plot +
   geom_text(aes(x = ymd(20170920)+1, label = "Maria landfall", y = 80, angle = 90))
 
 #Final modifications 
-
 google_trends_long %>% 
   ggplot(aes(date, Searches)) + 
   geom_ribbon(aes(ymin = 0, ymax = Searches, 
@@ -110,6 +121,8 @@ google_trends_long %>%
          axis.title.y = element_text(size=13),
          axis.text = element_text(size=11))
 
+# Looks nice! I'm not so sure about the labels on their side but 
+# otherwise I like it
 ```
 
 #Replicating National Cable News 
@@ -164,8 +177,6 @@ plot = tv_states_long %>%
    annotate( x=as.Date(tv_states_long$date[130]),y=3,label= 'atop(italic("Las Vegas"), italic("shooting"))', geom="text", color = "grey", parse = TRUE, size = 3) + #second anotate #HOW TO CHANGE LINE SPACE BETWEEN HARVEY LANDFALL 
    scale_y_continuous(label=function(x){return(paste(x, "%"))})
 
-  
-
 myFont2 <- "mono"
 plot + theme(panel.grid.minor = element_blank(), 
              panel.background = element_blank(),
@@ -185,13 +196,19 @@ plot + theme(panel.grid.minor = element_blank(),
 #FF8133 - orange
 #00AFBB - blue
 #FF33A8 - pink
+
+
+# Looks amazing! Really well done.
 ```
 
 
 ```{r CC Data Cleaning & Variable Creation, include=FALSE}
-library(tidyverse)
-comic_characters <- data.frame(comic_characters)
-str(comic_characters)
+#library(tidyverse)
+#comic_characters <- data.frame(comic_characters)
+#
+
+# I'd suggest staying consistent and using the tidyverse throughout
+#str(comic_characters)
 comic_characters$gender <- factor(comic_characters$sex)
 comic_characters$alive <- factor(comic_characters$alive)
 comic_characters$fyear <- factor(comic_characters$year)
@@ -212,7 +229,8 @@ comic_characters %>%
        y = "N") +
   theme_bw() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  scale_fill_OkabeIto()
+  scale_fill_OkabeIto() +
+  guides(fill = "none") # could probably omit the legend here
 ```
 
 ## Figure 2: Line graph of sum over time with different line for genders
@@ -305,9 +323,41 @@ cc_proplong %>%
        caption = "Data taken from 538's fivethirtyeightdata package") +
   theme_linedraw() +
   facet_zoom(ylim = c(0,0.002),
-             zoom.size = 1) +
+             zoom.size = 1,
+             split = TRUE) +
   scale_colour_OkabeIto()
 
-  
+# I tried replicating your plot using just the tidyverse but I'm not
+# able to. I'm not sure if I'm just not seeing something that you're
+# doing or if one of us has an error but I wasn't ablt to get your 
+# same plot. This is the approach I took
+
+cummulative_props <- comic_characters %>% 
+  count(year, gender) %>% 
+  pivot_wider(names_from = "gender",
+              values_from = n, 
+              values_fill = 0) %>% 
+  select(-`NA`) %>% # I dropped NA's because I didn't see them in yours, but I'm not sure this is ideal
+  pivot_longer(-year,
+               names_to = "Gender",
+               values_to = "n") %>% 
+  group_by(year, Gender) %>% 
+  mutate(cummulative_n = cumsum(n)) %>% 
+  group_by(year) %>% 
+  mutate(Prop = cummulative_n/sum(n)) %>% # Proportion of each gender within each year - is that what you did?
+  rename(Year = year)
+
+cummulative_props %>% 
+  ggplot(aes(x = Year, y = Prop, color = Gender)) +
+  geom_line() +
+  labs(title = "Proportional Gender Representation in Comics",
+       subtitle = "Proportions calculated cumulatively",
+       y = "Gender (Percent)",
+       caption = "Data taken from 538's fivethirtyeightdata package") +
+  theme_linedraw() +
+  facet_zoom(ylim = c(0,0.05),
+             zoom.size = 1,
+             split = TRUE) +
+  scale_colour_OkabeIto()
 ```
 
